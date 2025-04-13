@@ -1,0 +1,1 @@
+cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/simple.mod := printf '%s\n'   simple.o | awk '!x[$$0]++ { print("/home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/"$$0) }' > /home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/simple.mod

@@ -1,0 +1,1 @@
+cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.ko := ld -r -m elf_x86_64 -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T arch/x86/module.lds -o /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.ko /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.o /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.mod.o;  true
