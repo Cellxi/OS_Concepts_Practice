@@ -1,1 +1,0 @@
-cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/modules.order := {   echo /home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/simple.ko; :; } > /home/cellxi/C/Chapter_2/ProgrammingProjects/Simple_Module/modules.order

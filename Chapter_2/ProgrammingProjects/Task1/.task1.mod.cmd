@@ -1,1 +1,0 @@
-cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.mod := printf '%s\n'   task1.o | awk '!x[$$0]++ { print("/home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/"$$0) }' > /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.mod

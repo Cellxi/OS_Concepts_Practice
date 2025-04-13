@@ -1,1 +1,0 @@
-cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Hello_Module/hello.mod := printf '%s\n'   hello.o | awk '!x[$$0]++ { print("/home/cellxi/C/Chapter_2/ProgrammingProjects/Hello_Module/"$$0) }' > /home/cellxi/C/Chapter_2/ProgrammingProjects/Hello_Module/hello.mod

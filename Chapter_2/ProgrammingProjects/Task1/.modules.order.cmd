@@ -1,1 +1,0 @@
-cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/modules.order := {   echo /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/task1.ko; :; } > /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/modules.order

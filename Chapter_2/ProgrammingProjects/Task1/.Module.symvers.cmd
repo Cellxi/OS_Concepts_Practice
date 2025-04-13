@@ -1,1 +1,0 @@
-cmd_/home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/Module.symvers :=  sed 's/ko$$/o/'  /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/modules.order | scripts/mod/modpost -m      -o /home/cellxi/C/Chapter_2/ProgrammingProjects/Task1/Module.symvers -e -i Module.symvers -T - 
