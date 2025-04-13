@@ -1,7 +1,0 @@
-CompileFlags:
-  Add: [
-    "-I/lib/modules/$(uname -r)/build/include",
-    "-D__KERNEL__",
-    "-DMODULE"
-  ]
-
