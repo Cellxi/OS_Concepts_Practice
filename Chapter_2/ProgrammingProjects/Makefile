@@ -1,3 +1,5 @@
+#This Makefile is for hello module.
+#Change "hello.o" to "simple.o" if you need one for simple module.
 obj-m += hello.o
 
 all:
