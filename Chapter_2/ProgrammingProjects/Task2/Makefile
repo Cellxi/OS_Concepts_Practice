@@ -1,4 +1,4 @@
-obj-m := simple.o
+obj-m := task2.o
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
