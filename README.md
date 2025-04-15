@@ -1,0 +1,1 @@
+This repo includes examples and my answers to chapter exercise of Operating System Concepts(Tenth Edition).Details may differ from the original text in the book due to differences of version.They've been tested on Linux 6.1.0.
