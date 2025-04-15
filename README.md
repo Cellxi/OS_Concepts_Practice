@@ -2,11 +2,16 @@ This repo includes examples and my answers to chapter exercise of Operating Syst
 
 The book: https://archive.org/details/operatingsystemconcepts10th
 
-#####Chapter 1 Introduction
+#### Chapter 1 Introduction
 
-#####Chapter 2 Operating-System Structures
+#### Chapter 2 Operating-System Structures
+
 Copy files with POSIX API
+
 A hello kernel module and some modifications
-#####Chapter 3 Processes
+
+#### Chapter 3 Processes
+
 IPC methods: shared memory and pipes
+
 Pass information across parent and child processes
