@@ -74,6 +74,8 @@ int main (int argc, char *argv[])
             time_minus (&endtime, *ptr);
             printf ("%s ended, cost %lu.%09ld seconds\n", argv[1],
                     endtime.tv_sec, endtime.tv_nsec);
+            //Best practices: Unlink exactly once, typically in the parent after you’re done with the mapping
+            shm_unlink(MNAME);
         }
     return 0;
 }
