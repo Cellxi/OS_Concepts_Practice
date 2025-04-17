@@ -13,7 +13,7 @@ int main ()
     if (pid == 0)
         {
             execlp ("/bin/ls", "ls", NULL);
-            printf ("");
+            printf ("LINE J");
         }
     else
         {
