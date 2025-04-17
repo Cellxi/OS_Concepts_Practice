@@ -9,7 +9,7 @@ void copy (int from, int to)
 {
     char buffer[BUFF_SIZE];
     ssize_t size_read = read (from, buffer, BUFF_SIZE);
-    while (size_read != EOF)
+    while (size_read) // read() doesn't return EOF, it returns 0 on EOF.
         {
             if (write (to, buffer, size_read) != size_read)
                 perror ("pp: write error"), exit (1);
