@@ -7,29 +7,37 @@
 
 #define MAX_LINE 80
 
-void child (char *args[]) {}
 int read_command (char *args[])
 {
     char buffer[MAX_LINE];
     int i, j;
     int end_of_line = 0;
-    for (i = 1; i <= MAX_LINE / 2; ++i)
+    static int flag_wait;
+    for (i = 0; i <= MAX_LINE / 2; ++i)
         {
             /* Read a single word. */
             for (j = 0; j < MAX_LINE; ++j)
                 {
                     buffer[j] = getchar ();
-                    if (buffer[j] == ' ')
+                    switch (buffer[j])
                         {
+                        case '\n':
+                            end_of_line = 1; // It goes to next case then.
+                        case ' ':
                             buffer[j] = 0;
                             break;
+                        case '!':
+                            if (j > 0 && buffer[j - 1] == '!')
+                                {
+                                    while (buffer[j] != '\n')
+                                        buffer[j] = getchar ();
+                                    return flag_wait;
+                                } // Initiation doesn't matter.
+                        default:
+                            continue;
                         }
-                    if (buffer[j] == '\n')
-                        {
-                            buffer[j] = 0;
-                            end_of_line = 1;
-                            break;
-                        }
+                    if (buffer[j] == 0)
+                        break;
                 }
             /* Store the argument. */
             args[i] = (char *)malloc (strlen (buffer));
@@ -38,15 +46,24 @@ int read_command (char *args[])
             if (end_of_line)
                 break;
         }
+
+    /* Set the last argument NULL to avoid misreading the previous. */
+    free (args[i + 1]);
+    args[i + 1] = NULL;
+
     /* Check '&' signal. */
     if (strcmp (args[i], "&") == 0)
-        return 1;
+        {
+            free (args[i]);
+            args[i] = NULL;
+            return flag_wait = 0;
+        }
     else
-        return 0;
+        return flag_wait = 1;
 }
 
-/* This function execute the command args[0] in child process and decide whether the parent process
- * need to wait arroding to flag. */
+/* This function execute the command args[0] in child process and decide whether the parent
+ * process need to wait arroding to flag. */
 void exe_command (char *args[], int flag_wait)
 {
     pid_t pid = fork ();
@@ -54,58 +71,40 @@ void exe_command (char *args[], int flag_wait)
         perror ("failed to frok");
     else if (pid == 0)
         {
-            execvp (args[0], args + 1);
-            perror ("child: failed to execute");
+            execvp (args[0], args);
+            perror ("failed to execute");
+            exit (1);
         }
-    else
-        {
-            if (flag_wait)
-                wait (NULL);
-        }
+    else if (flag_wait)
+        wait (NULL);
 }
 
 int main (void)
 {
-    /* The author puts *args[] in main to adapt to later update for history functionality. */
-    char *args[MAX_LINE / 2 + 1] = { NULL };
-    char buffer[MAX_LINE];
-    int should_run = 1;
-    int wait_or_not = -1;
+    char *args[MAX_LINE / 2 + 1] = { NULL }; // An array of pointers that saves command arguments.
+    int should_run = 1;                      // The flag of main loop to continue.
+    int wait_or_not;                         // The flag to conduct parent process to wait.
 
     while (should_run)
         {
             printf ("osh>");
             fflush (stdout);
 
-            /* Read the user inputs. */
-            scanf ("%s", buffer);
-            if (strcmp (buffer, "exit") == 0)
-                should_run = 0;
-            else if (strcmp (buffer, "!!") == 0)
+            /* Read user inputs. */
+            wait_or_not = read_command (args);
+            if (args[0] == NULL)
                 {
-                    /* If this is the first command. */
-                    if (args[0] == NULL)
-                        {
-                            perror ("No commands in history");
-                            continue;
-                        }
-
-                    /* Use the arguments from last command including wait_or_not. */
-                    exe_command (args, wait_or_not);
+                    fprintf (stderr, "No commands in history.\n");
+                    continue;
                 }
-            else
+
+            /* Follow the commands in args. */
+            if (strcmp (args[0], "exit") == 0)
                 {
-                    /* Store the command name. */
-                    args[0] = (char *)malloc (strlen (buffer));
-                    strcpy (args[0], buffer);
-
-                    /* Read the following arguments. */
-                    wait_or_not = read_command (args);
-
-                    /* Run the child process to execute commands. */
-                    exe_command (args, wait_or_not);
+                    should_run = 0;
+                    continue;
                 }
-            // Then it goes to next round.
+            exe_command (args, wait_or_not);
         }
     int i;
     for (i = 0; i <= MAX_LINE / 2; ++i)
