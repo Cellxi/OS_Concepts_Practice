@@ -55,3 +55,7 @@ tcpipe : Times how long a command runs.
 tcommand : Pass the timespec struct through shared memory.
 
 Collatz : Gets an integer between 1 ~ 2^63 from shell and tries to verify that it fits the conjecture. The child process handles the calculating and the parent process outputs. They communicate by both pipes and share memory.
+
+#### UNIX SHELL
+
+This project follows the guide from Project 1 in 3.15 Programming Projects. It implements an interface to receive commands from users and execute them in child processes. It also supports I/O redirection from/to files and pipes as a form of IPC between a pair of commands.
