@@ -1,1 +1,0 @@
-. .. main.c main.o Makefile out.txt read_command.c read_command.o uheads.h UNISHELL
