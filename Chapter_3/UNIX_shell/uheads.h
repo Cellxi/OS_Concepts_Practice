@@ -10,6 +10,7 @@
 #define MAX_LINE 80
 
 extern int outfd_backup, infd_backup;
+extern int flag_pipe;
 
 /* Input handle in main loop. */
 int read_command (char *args[]);

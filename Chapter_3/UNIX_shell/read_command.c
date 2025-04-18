@@ -5,6 +5,9 @@
  * file streams. So we need to restore them without STDIN_FILENO and STDOUT_FILENO. */
 int infd_backup, outfd_backup;
 
+/* Indicates if the outputs of current command is regarded as the input of next command. */
+int flag_pipe;
+
 /* This function read the file name to redirect std. */
 void redirect (int from)
 {
@@ -68,6 +71,10 @@ int read_command (char *args[])
                                 {
                                     while (buffer[j] != '\n')
                                         buffer[j] = getchar ();
+                                    int k;
+                                    for (k = 0; args[k + 1] != NULL; ++k)
+                                        printf ("%s ", args[k]);
+                                    printf ("%s\n", args[k]);
                                     return flag_wait;
                                 } // Initiation doesn't matter.
                         default:
