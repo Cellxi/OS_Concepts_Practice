@@ -8,6 +8,15 @@ int infd_backup, outfd_backup;
 /* Indicates if the outputs of current command is regarded as the input of next command. */
 int flag_pipe;
 
+/* Indicates if the command runs concurrently. */
+int flag_wait = 1;
+
+/* Indicates if the command is a repeat. */
+int flag_repe;
+
+/* Indicates if the command means quit. */
+int flag_exit;
+
 /* This function read the file name to redirect std. */
 void redirect (int from)
 {
@@ -36,73 +45,83 @@ void redirect (int from)
     close (to); // Break the link of fd to its file.
 }
 
-/* This function runs again and again in main loop to read user inputs. */
-int read_command (char *args[])
+/* Read a single word and backup file desciptor. Returns 1 when meeting an end of the line. */
+int read_word (char *buffer)
 {
-    char buffer[MAX_LINE];
-    int i, j;
-    int end_of_line = 0;
-    static int flag_wait;
-
-    for (i = 0; i <= MAX_LINE / 2; ++i)
+    int j;
+    for (j = 0; j < MAX_LINE; ++j)
         {
-            /* Read a single word. */
-            for (j = 0; j < MAX_LINE; ++j)
+            buffer[j] = getchar ();
+            switch (buffer[j])
                 {
-                    buffer[j] = getchar ();
-                    switch (buffer[j])
-                        {
-                        case '>':
-                            outfd_backup = dup (STDOUT_FILENO);
-                            redirect (STDOUT_FILENO);
-                        case EOF:
-                        case '\n':
-                            end_of_line = 1; // It goes to next case then.
-                        case ' ':
-                            buffer[j] = 0;
-                            break;
-                        case '<':
-                            infd_backup = dup (STDIN_FILENO);
-                            redirect (STDIN_FILENO);
-                            buffer[j] = 0;
-                            break;
-                        case '!':
-                            if (j > 0 && buffer[j - 1] == '!')
-                                {
-                                    while (buffer[j] != '\n')
-                                        buffer[j] = getchar ();
-                                    int k;
-                                    for (k = 0; args[k + 1] != NULL; ++k)
-                                        printf ("%s ", args[k]);
-                                    printf ("%s\n", args[k]);
-                                    return flag_wait;
-                                } // Initiation doesn't matter.
-                        default:
-                            continue;
-                        }
-                    if (buffer[j] == 0)
-                        break;
+                case '>':
+                    outfd_backup = dup (STDOUT_FILENO);
+                    redirect (STDOUT_FILENO);
+                case EOF:
+                case '\n':
+                    buffer[j] = 0;
+                    return 1;
+                case '<':
+                    infd_backup = dup (STDIN_FILENO);
+                    redirect (STDIN_FILENO);
+                case ' ':
+                    buffer[j] = 0;
+                    break;
+                default:
+                    continue;
                 }
-            /* Store the argument. */
-            free (args[i]);
-            args[i] = (char *)malloc (strlen (buffer));
-            strcpy (args[i], buffer);
-
-            if (end_of_line)
+            if (buffer[j] == 0)
                 break;
         }
+    return 0;
+}
+
+/* This function checks whether the current argument is a special signal ans sets corresponding
+ * flags. It will return 1 if buffer isn't a signal. */
+int not_flag (char *buffer)
+{
+    if (strcmp (buffer, "|") == 0)
+        flag_pipe = 1;
+    else if (strcmp (buffer, "!!") == 0)
+        flag_repe = 1;
+    else if (strcmp (buffer, "&") == 0)
+        flag_wait = 0;
+    else if (strcmp (buffer, "exit") == 0)
+        flag_exit = 1;
+    else
+        return 1;
+    return 0;
+}
+
+/* This function runs again and again in main loop to read user inputs. */
+void read_command (char *args[])
+{
+
+    /* The flag to indicate the end of a line. */
+    int end_of_line = 0;
+    char buffer[MAX_LINE];
+    int i;
+
+    /* Read until the end of this command. */
+    for (i = 0; i <= MAX_LINE / 2 && !end_of_line; ++i)
+        {
+            /* Read a single word to buffer each time. */
+            end_of_line = read_word (buffer);
+
+            /* Check if the word is a flag. */
+            if (not_flag (buffer))
+                {
+                    free (args[i]);
+                    args[i] = (char *)malloc (strlen (buffer));
+                    strcpy (args[i], buffer);
+                }
+        }
+
+    /* Leave args untouched. User shouldn't input argument before !! in one line */
+    if (flag_repe)
+        return;
 
     /* Set the last argument NULL to avoid misreading the previous. */
-    free (args[i + 1]);
-    args[i + 1] = NULL;
-
-    /* Check '&' signal. */
-    if (strcmp (args[i], "&") == 0)
-        {
-            free (args[i]);
-            args[i] = NULL;
-            return flag_wait = 0;
-        }
-    else
-        return flag_wait = 1;
+    free (args[i]);
+    args[i] = NULL;
 }

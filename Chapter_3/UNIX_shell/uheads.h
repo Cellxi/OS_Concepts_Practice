@@ -11,8 +11,11 @@
 
 extern int outfd_backup, infd_backup;
 extern int flag_pipe;
+extern int flag_wait;
+extern int flag_repe;
+extern int flag_exit;
 
 /* Input handle in main loop. */
-int read_command (char *args[]);
+void read_command (char *args[]);
 
 #endif
