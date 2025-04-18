@@ -1,66 +1,4 @@
-#include <ctype.h> // It includes type judge functions.
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-#define MAX_LINE 80
-
-int read_command (char *args[])
-{
-    char buffer[MAX_LINE];
-    int i, j;
-    int end_of_line = 0;
-    static int flag_wait;
-    for (i = 0; i <= MAX_LINE / 2; ++i)
-        {
-            /* Read a single word. */
-            for (j = 0; j < MAX_LINE; ++j)
-                {
-                    buffer[j] = getchar ();
-                    switch (buffer[j])
-                        {
-                        case '\n':
-                            end_of_line = 1; // It goes to next case then.
-                        case ' ':
-                            buffer[j] = 0;
-                            break;
-                        case '!':
-                            if (j > 0 && buffer[j - 1] == '!')
-                                {
-                                    while (buffer[j] != '\n')
-                                        buffer[j] = getchar ();
-                                    return flag_wait;
-                                } // Initiation doesn't matter.
-                        default:
-                            continue;
-                        }
-                    if (buffer[j] == 0)
-                        break;
-                }
-            /* Store the argument. */
-            args[i] = (char *)malloc (strlen (buffer));
-            strcpy (args[i], buffer);
-
-            if (end_of_line)
-                break;
-        }
-
-    /* Set the last argument NULL to avoid misreading the previous. */
-    free (args[i + 1]);
-    args[i + 1] = NULL;
-
-    /* Check '&' signal. */
-    if (strcmp (args[i], "&") == 0)
-        {
-            free (args[i]);
-            args[i] = NULL;
-            return flag_wait = 0;
-        }
-    else
-        return flag_wait = 1;
-}
+#include "uheads.h"
 
 /* This function execute the command args[0] in child process and decide whether the parent
  * process need to wait arroding to flag. */
@@ -105,6 +43,12 @@ int main (void)
                     continue;
                 }
             exe_command (args, wait_or_not);
+
+            /* Restore the meaning of std file descriptors. */
+            if (infd_backup)
+                dup2 (infd_backup, STDIN_FILENO), close (infd_backup), infd_backup = 0;
+            if (outfd_backup)
+                dup2 (outfd_backup, STDOUT_FILENO), close (outfd_backup), outfd_backup = 0;
         }
     int i;
     for (i = 0; i <= MAX_LINE / 2; ++i)
