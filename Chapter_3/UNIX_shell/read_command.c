@@ -52,6 +52,8 @@ int read_word (char *buffer)
     for (j = 0; j < MAX_LINE; ++j)
         {
             buffer[j] = getchar ();
+            while (buffer[0] == ' ')
+                buffer[0] = getchar ();
             switch (buffer[j])
                 {
                 case '>':
@@ -67,6 +69,9 @@ int read_word (char *buffer)
                 case ' ':
                     buffer[j] = 0;
                     break;
+                case '|':
+                    buffer[j + 1] = 0;
+                    return 1;
                 default:
                     continue;
                 }
@@ -93,7 +98,7 @@ int not_flag (char *buffer)
     return 0;
 }
 
-/* This function runs again and again in main loop to read user inputs. */
+/* Reads inputs from stdin until end_of_line. */
 void read_command (char *args[])
 {
 
